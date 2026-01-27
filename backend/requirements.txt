@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+torch
+torchvision
+timm
+opencv-python
+numpy
+pillow
+python-dotenv
+supabase

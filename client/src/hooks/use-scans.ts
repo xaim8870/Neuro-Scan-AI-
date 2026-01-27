@@ -1,46 +1,82 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type ScanResponse } from "@shared/routes";
+import type { ScanResponse } from "@shared/routes";
 
-// GET /api/scans - List recent scans
+/**
+ * ✅ Fetch recent scans from backend
+ */
 export function useScans() {
-  return useQuery({
-    queryKey: [api.scans.list.path],
+  return useQuery<ScanResponse[]>({
+    queryKey: ["recent-scans"],
     queryFn: async () => {
-      const res = await fetch(api.scans.list.path, { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to fetch scans");
-      return api.scans.list.responses[200].parse(await res.json());
+      const res = await fetch("http://localhost:8000/recent-scans");
+
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      const data = await res.json();
+
+      // Map backend → frontend
+      return data.map((scan: any) => ({
+        id: scan.id,
+        fileName: scan.file_name,
+        diagnosis: scan.diagnosis,
+        confidence: scan.confidence / 100,
+        createdAt: new Date(scan.created_at),
+        imageUrl: scan.gradcam_url
+          ? `data:image/png;base64,${scan.gradcam_url}`
+          : "",
+        probabilities: scan.probabilities ?? {},
+      }));
     },
   });
 }
 
-// POST /api/analyze - Upload and analyze image
+/**
+ * ✅ Analyze MRI scan using FastAPI backend
+ * + auto-refresh recent scans
+ */
 export function useAnalyzeScan() {
   const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append("image", file);
 
-      const res = await fetch(api.scans.analyze.path, {
-        method: api.scans.analyze.method,
+  return useMutation({
+    mutationFn: async (
+      file: File
+    ): Promise<
+      ScanResponse & {
+        probabilities?: Record<string, number>;
+      }
+    > => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("http://localhost:8000/predict", {
+        method: "POST",
         body: formData,
-        credentials: "include",
       });
 
       if (!res.ok) {
-        if (res.status === 400) {
-          const error = await res.json();
-          throw new Error(error.message || "Invalid upload");
-        }
-        throw new Error("Analysis failed");
+        throw new Error(await res.text());
       }
 
-      return api.scans.analyze.responses[201].parse(await res.json());
+      const data = await res.json();
+
+      return {
+        id: Date.now(),
+        fileName: file.name,
+        diagnosis: data.prediction,
+        confidence: data.confidence / 100,
+        createdAt: new Date(),
+        imageUrl: data.gradcam
+          ? `data:image/png;base64,${data.gradcam}`
+          : "",
+        probabilities: data.probabilities,
+      };
     },
+
+    // 🔥 THIS is what refreshes Recent Scans
     onSuccess: () => {
-      // Invalidate the list so the new scan appears immediately in "Recent Scans"
-      queryClient.invalidateQueries({ queryKey: [api.scans.list.path] });
+      queryClient.invalidateQueries({ queryKey: ["recent-scans"] });
     },
   });
 }

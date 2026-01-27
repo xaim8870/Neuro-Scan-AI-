@@ -1,0 +1,6 @@
+{
+  "venvPath": "backend",
+  "venv": "venv",
+   "reportCallIssue": false,
+  "reportAttributeAccessIssue": false
+}

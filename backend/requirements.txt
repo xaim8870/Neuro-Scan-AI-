@@ -8,3 +8,6 @@ numpy
 pillow
 python-dotenv
 supabase
+requests
+opencv-python-headless
+

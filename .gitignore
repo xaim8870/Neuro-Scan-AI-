@@ -1,4 +1,9 @@
 node_modules
+# ML model weights
+*.pt
+backend/model/
+__pycache__/
+*.pyc
 dist
 .DS_Store
 server/public
@@ -14,3 +19,7 @@ venv/
 
 # Node modules
 node_modules/
+
+# Local tools
+.local/
+.vscode/

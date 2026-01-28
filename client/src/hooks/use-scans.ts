@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ScanResponse } from "@shared/routes";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 /**
  * ✅ Fetch recent scans from backend
  */
@@ -8,7 +10,7 @@ export function useScans() {
   return useQuery<ScanResponse[]>({
     queryKey: ["recent-scans"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:8000/recent-scans");
+      const res = await fetch(`${API_URL}/recent-scans`);
 
       if (!res.ok) {
         throw new Error(await res.text());
@@ -16,7 +18,6 @@ export function useScans() {
 
       const data = await res.json();
 
-      // Map backend → frontend
       return data.map((scan: any) => ({
         id: scan.id,
         fileName: scan.file_name,
@@ -40,17 +41,11 @@ export function useAnalyzeScan() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (
-      file: File
-    ): Promise<
-      ScanResponse & {
-        probabilities?: Record<string, number>;
-      }
-    > => {
+    mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("http://localhost:8000/predict", {
+      const res = await fetch(`${API_URL}/predict`, {
         method: "POST",
         body: formData,
       });
@@ -74,7 +69,6 @@ export function useAnalyzeScan() {
       };
     },
 
-    // 🔥 THIS is what refreshes Recent Scans
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recent-scans"] });
     },

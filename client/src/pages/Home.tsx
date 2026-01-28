@@ -6,7 +6,7 @@ import { ModelInfo } from "@/components/ModelInfo";
 import { ModelArchitecture } from "@/components/ModelArchitecture";
 import { type ScanResponse } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, ArrowDown } from "lucide-react";
+import { Brain, ArrowDown, Github, Database, Cpu } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 const cn = clsx;
@@ -188,22 +188,77 @@ export default function Home() {
       
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-12 px-4">
-        <div className="max-w-7xl mx-auto text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="bg-white/10 rounded-lg p-2">
-              <Brain className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-xl text-white tracking-tight">NeuroScan AI</span>
-          </div>
-          <p className="max-w-md mx-auto text-sm">
-            This tool is for educational and demonstration purposes only. 
-            Always consult with a certified medical professional for diagnosis.
-          </p>
-          <div className="pt-8 text-xs border-t border-slate-800 w-full">
-            © 2024 Brain Tumor Classification System. All rights reserved.
-          </div>
-        </div>
-      </footer>
+  <div className="max-w-7xl mx-auto text-center space-y-6">
+
+    {/* Logo */}
+    <div className="flex items-center justify-center gap-2">
+      <div className="bg-white/10 rounded-lg p-2">
+        <Brain className="w-6 h-6 text-white" />
+      </div>
+      <span className="font-bold text-xl text-white tracking-tight">
+        NeuroScan AI
+      </span>
+    </div>
+
+    {/* Description */}
+    <p className="max-w-md mx-auto text-sm">
+      AI-powered Brain Tumor Classification system using deep learning.
+      Built for research, education, and experimentation.
+    </p>
+
+    {/* Links */}
+    <div className="flex flex-wrap justify-center gap-6 text-sm pt-4">
+
+      {/* GitHub */}
+      <a
+        href="https://github.com/USERNAME/REPO_NAME"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 hover:text-white transition"
+      >
+        <Github className="w-4 h-4" />
+        Model Training & Architecture
+      </a>
+
+      {/* Hugging Face Model */}
+      <a
+        href="https://huggingface.co/usamaJabar/BrainTumorClassifier"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 hover:text-white transition"
+      >
+        <Cpu className="w-4 h-4" />
+        Trained Model (Hugging Face)
+      </a>
+
+      {/* Hugging Face Dataset */}
+      <a
+        href="https://huggingface.co/datasets/USERNAME/DATASET_NAME"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 hover:text-white transition"
+      >
+        <Database className="w-4 h-4" />
+        Brain Tumor Dataset
+      </a>
+    </div>
+
+    {/* Footer Bottom */}
+    <div className="pt-8 text-xs border-t border-slate-800 space-y-2">
+      <p>
+        Developed by <span className="text-white font-medium">Usama Jabar</span>
+      </p>
+      <p>
+        ⚠️ For educational and research purposes only.  
+        Not a substitute for professional medical diagnosis.
+      </p>
+      <p className="opacity-70">
+        © 2024 NeuroScan AI — Brain Tumor Classification System
+      </p>
+    </div>
+
+  </div>
+</footer>
     </div>
   );
 }
